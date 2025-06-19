@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FastAPI ClamAV Scanner</title>
+</head>
+<body>
+  <h1>Upload a File to Scan</h1>
+  <form action="/" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <button type="submit">Scan</button>
+  </form>
+
+{% if filename %}
+  <h2>Scan Result</h2>
+  <p>File: <strong>{{ filename }}</strong></p>
+
+  {% if scan_status == "clean" %}
+    <p style="color:green; font-size: 2em;">✅ File is clean</p>
+  {% elif scan_status == "infected" %}
+    <p style="color:red; font-size: 2em;">❌ Virus detected!</p>
+  {% endif %}
+
+  <pre>{{ scan_result }}</pre>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  clamav:
+    image: clamav/clamav:stable
+    platform: linux/amd64  # required for Apple Silicon
+    ports:
+      - "3310:3310"         # expose ClamAV TCP socket
+    restart: unless-stopped
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - CLAMD_HOST=clamav
+      - CLAMD_PORT=3310
+    depends_on:
+      - clamav
