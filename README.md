@@ -15,40 +15,58 @@ cd clamav-fastapi
 
 ### 2. Start both FastAPI + ClamAV
 #### Build with docker-compose
+
 ```bash
 docker compose up --build
 ```
 
 #### Build with docker, run both services in the same Docker Network
-```bash
-docker network create clamnet
-docker build -t clamav-fastapi .
-docker run --platform=linux/amd64 --rm --name clamd -p 3310:3310 clamav/clamav:stable
-docker run --rm -p 8000:8000 --env CLAMD_HOST=clamd clamav-fastapi
-```
-We can also run
-```bash
-./start.sh
-```
-and
-```bash
-./stop.sh
-```
-to make this process easier
 
-#### If ClamAV runs on a different host or VM, then:
-Set CLAMD_HOST to the IP or DNS of that server.
-Make sure ClamAV’s port 3310 is open to the FastAPI machine (via firewall/security group).
-Run FastAPI like:
 ```bash
-docker run --rm -p 8000:8000 \
-  -e CLAMD_HOST=12.34.56.78 \
-  -e CLAMD_PORT=3310 \
-  clamav-fastapi
+chmod +x start.sh
+./start.sh
 ```
 
 ### 3. Visit the web scanner
+
 Open http://localhost:8000 and upload a file.
 
 ### 4. Try uploading a virus
+
 Upload the file eicar.txt to see the scanner in action.
+
+## 🚫 Known Issues & Fixes
+
+### ClamAV fails to start / clamd exits
+
+- Ensure clamd.conf is correct
+- Run freshclam before clamd (done in Dockerfile)
+
+### freshclam exits too fast in Supervisor
+
+- It's better to run freshclam once during build or manually at runtime, not via Supervisor
+
+## 🛠️ Customization
+
+You can:
+
+- Replace the HTML upload form with your own branding
+- Add scan history tracking
+- Connect to a remote ClamAV instance
+
+## 🌐 Deployment
+
+This is ideal for self-hosting or internal security tools. It can also be deployed to:
+
+- EC2 or any cloud VM
+- Portainer / Docker Swarm
+- Kubernetes (as a single pod)
+
+## 🌟 Credits
+
+- Created by xuan73
+- Blog post: Building a Web-Based Virus Scanner Using ClamAV and FastAPI
+
+## 🔧 License
+
+- MIT License

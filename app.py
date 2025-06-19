@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 import clamd
 import os
+import socket
+import time
 
 app = FastAPI()
 
@@ -22,6 +24,18 @@ class ScanResult(BaseModel):
     filename: str
     result: dict
 
+
+def wait_for_clamd(host="localhost", port=3310, timeout=10):
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            with socket.create_connection((host, port), timeout=2):
+                return True
+        except OSError:
+            time.sleep(0.5)
+    return False
+
+
 @app.get("/", response_class=HTMLResponse)
 async def form(request: Request):
     """
@@ -35,6 +49,7 @@ async def form(request: Request):
     """
     return templates.TemplateResponse("upload.html", {"request": request})
 
+
 @app.post("/", response_class=HTMLResponse)
 async def upload(request: Request, file: UploadFile = File(...)):
     result = cd.instream(file.file)
@@ -47,6 +62,7 @@ async def upload(request: Request, file: UploadFile = File(...)):
         "status": status,
         "scan_result": result
     })
+
 
 @app.post("/scan", response_model=ScanResult)
 async def scan_file(file: UploadFile = File(...)):
