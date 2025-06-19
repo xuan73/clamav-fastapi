@@ -14,9 +14,9 @@
   <h2>Scan Result</h2>
   <p>File: <strong>{{ filename }}</strong></p>
 
-  {% if scan_status == "clean" %}
+  {% if status == "clean" %}
     <p style="color:green; font-size: 2em;">✅ File is clean</p>
-  {% elif scan_status == "infected" %}
+  {% elif status == "infected" %}
     <p style="color:red; font-size: 2em;">❌ Virus detected!</p>
   {% endif %}
 
